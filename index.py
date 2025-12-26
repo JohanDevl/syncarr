@@ -280,15 +280,15 @@ def sync_servers(instanceA_contents, instanceB_language_id, instanceB_contentIds
             elif sync_monitor:
                 # else if is already synced and we want to sync monitoring then sync that now
                 
-                # find matching content from instance B to check monitored status
-                matching_content_instanceB = list(filter(lambda content_instanceB: content_instanceB['titleSlug'] == content.get('titleSlug'), instanceB_contents))
+                # find matching content from instance B to check monitored status (use content_id_key for reliable matching)
+                matching_content_instanceB = list(filter(lambda content_instanceB: content_instanceB.get(content_id_key) == content.get(content_id_key), instanceB_contents))
                 if(len(matching_content_instanceB) == 1):
                     matching_content_instanceB = matching_content_instanceB[0]
                     # if we found a content match from instance B, then check monitored status - if different then sync from A to B
                     if matching_content_instanceB['monitored'] != content['monitored']:
                         matching_content_instanceB['monitored'] = content['monitored']
                         instanceB_content_url = get_content_put_path(instanceB_url, instanceB_key, matching_content_instanceB.get('id'))
-                        sync_response = instanceB_session.put(instanceB_content_url, json=matching_content_instanceB)
+                        sync_response = instanceB_session.put(instanceB_content_url, json=matching_content_instanceB, headers={'Content-Type': 'application/json'})
                         # check response and save content id for searching later on if success
                         if sync_response.status_code != 202:
                             logger.error(f'server monitoring sync error for {title} - response: {sync_response.text}')
