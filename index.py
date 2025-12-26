@@ -266,7 +266,7 @@ def sync_servers(instanceA_contents, instanceB_language_id, instanceB_contentIds
             elif content_not_synced:
                 # sync content if not synced
                 logging.info(f'syncing content title "{title}"')
-                sync_response = instanceB_session.post(instanceB_content_url, json=formatted_content)
+                sync_response = instanceB_session.post(instanceB_content_url, json=formatted_content, headers={'Content-Type': 'application/json'})
                 # check response and save content id for searching later on if success
                 if sync_response.status_code != 201 and sync_response.status_code != 200:
                     logger.error(f'server sync error for {title} - response: {sync_response.text}')

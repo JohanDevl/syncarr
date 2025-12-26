@@ -2,7 +2,7 @@
 
 Syncs two Radarr/Sonarr/Lidarr servers through the web API. Useful for syncing a 4k Radarr/Sonarr instance to a 1080p Radarr/Sonarr instance.
 
-* Supports Radarr/Sonarr v3.
+* Supports Radarr v3-v5, Sonarr v3-v4, and Lidarr v1+
 * Can sync by `profile` name or `profile_id`
 * Filter what media gets synced by `profile` name or `profile_id`
 * Supports Docker for multiple instances
@@ -115,7 +115,7 @@ This script can run through a docker container with a set interval (default ever
 
 ```bash
 syncarr:
-    image: syncarr/syncarr:latest
+    image: ghcr.io/johandevl/syncarr:latest
     container_name: syncarr
     restart: unless-stopped
     environment:
@@ -128,11 +128,30 @@ syncarr:
         SYNC_INTERVAL_SECONDS: 300
 ```
 
+To sync only monitoring status (without adding new content):
+
+```yaml
+syncarr:
+    image: ghcr.io/johandevl/syncarr:latest
+    container_name: syncarr
+    restart: unless-stopped
+    environment:
+        RADARR_A_URL: https://4k.example.com:443
+        RADARR_A_KEY: XXXXX
+        RADARR_B_URL: http://127.0.0.1:8080
+        RADARR_B_KEY: XXXXX
+        RADARR_B_PROFILE: 1080p
+        RADARR_B_PATH: /data/Movies
+        SYNCARR_SYNC_MONITOR: 1
+        SYNCARR_SKIP_MISSING: 0
+        SYNC_INTERVAL_SECONDS: 300
+```
+
 or
 
 ```bash
 syncarr:
-    image: syncarr/syncarr:latest
+    image: ghcr.io/johandevl/syncarr:latest
     container_name: syncarr
     restart: unless-stopped
     environment:
@@ -149,7 +168,7 @@ or
 
 ```bash
 syncarr:
-    image: syncarr/syncarr:latest
+    image: ghcr.io/johandevl/syncarr:latest
     container_name: syncarr
     restart: unless-stopped
     environment:
@@ -169,7 +188,7 @@ syncarr:
 For just plain docker (radarr example):
 
 ```bash
-docker run -it --rm --name syncarr -e RADARR_A_URL=https://4k.example.com:443 -e RADARR_A_KEY=XXXXX -e RADARR_B_URL=http://127.0.0.1:8080 -e RADARR_B_KEY=XXXXX -e RADARR_B_PROFILE=1080p -e RADARR_B_PATH=/data/Movies -e SYNC_INTERVAL_SECONDS=300 syncarr/syncarr
+docker run -it --rm --name syncarr -e RADARR_A_URL=https://4k.example.com:443 -e RADARR_A_KEY=XXXXX -e RADARR_B_URL=http://127.0.0.1:8080 -e RADARR_B_KEY=XXXXX -e RADARR_B_PROFILE=1080p -e RADARR_B_PATH=/data/Movies -e SYNC_INTERVAL_SECONDS=300 ghcr.io/johandevl/syncarr
 ```
 
 ## Notes
